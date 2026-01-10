@@ -7,7 +7,7 @@
 #include "Ingredient.h"
 #include "MultiThreading/TSQueue.h"
 
-#include <time.h>
+#include <ctime>
 
 static TSQueue<Ingredient> ingredientsQueue;
 

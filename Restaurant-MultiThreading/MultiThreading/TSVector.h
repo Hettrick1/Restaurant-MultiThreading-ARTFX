@@ -8,8 +8,7 @@ class TSVector
 {
 private:
     mutable std::mutex mut;
-    std::vector<T> dataVector;
-    std::condition_variable dataCond;
+    std::vector<T> dataVector;    
 public:
     TSVector(){}
     
@@ -36,50 +35,23 @@ public:
     void push_back(T newValue)
     {
         std::lock_guard<std::mutex> lk(mut);
-        dataVector.push_back(newValue);
-        dataCond.notify_one();
+        dataVector.push_back(std::move(newValue));
     }
 
     void push_back(std::initializer_list<T> ilist)
     {
         std::lock_guard<std::mutex> lk(mut);
         dataVector.insert(dataVector.end(), ilist);
-        dataCond.notify_one();
     }
     
-    void waitAndPop_back(T& value)
+    std::shared_ptr<T> pop_back()
     {
         std::unique_lock<std::mutex> lk(mut);
-        dataCond.wait(lk, [this] {return !dataVector.empty();});
-        value = dataVector.back();
-        dataVector.pop_back();
-    }
-    
-    std::shared_ptr<T> waitAndPop_back()
-    {
-        std::unique_lock<std::mutex> lk(mut);
-        dataCond.wait(lk, [this] {return !dataVector.empty();});
-        std::shared_ptr<T> res(std::make_shared<T>(dataVector.back()));
-        dataVector.pop_back();
-        return res;
-    }
-    
-    bool try_pop_back(T& value)
-    {
-        std::lock_guard<std::mutex> lk(mut);
-        if(dataVector.empty())
-            return false;
-        value = dataVector.back();
-        dataVector.pop_back();
-        return true;
-    }
-    
-    std::shared_ptr<T> try_pop_back()
-    {
-        std::lock_guard<std::mutex> lk(mut);
-        if(dataVector.empty())
-            return std::shared_ptr<T>();
-        std::shared_ptr<T> res( std::make_shared<T>(dataVector.back()) );
+        if (dataVector.empty())
+        {
+            return nullptr;
+        }
+        std::shared_ptr<T> res(std::make_shared<T>(std::move(dataVector.back())));
         dataVector.pop_back();
         return res;
     }

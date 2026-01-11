@@ -11,6 +11,7 @@ private:
     mutable std::mutex mut;
     std::queue<T> dataQueue;
     std::condition_variable dataCond;
+    bool mClosed = false;
 public:
     TSQueue(){}
     
@@ -29,29 +30,29 @@ public:
         dataCond.notify_one();
     }
     
-    void waitAndPop(T& value)
-    {
-        std::unique_lock<std::mutex> lk(mut);
-        dataCond.wait(lk, [this] {return !dataQueue.empty();});
-        value = dataQueue.front();
-        dataQueue.pop();
-    }
-    
     std::shared_ptr<T> waitAndPop()
     {
         std::unique_lock<std::mutex> lk(mut);
-        dataCond.wait(lk, [this] {return !dataQueue.empty();});
+        dataCond.wait(lk, [this] {return mClosed || !dataQueue.empty();});
+
+        if (mClosed && dataQueue.empty())
+        {
+            return nullptr;
+        }
+        
         std::shared_ptr<T> res(std::make_shared<T>(dataQueue.front()));
         dataQueue.pop();
         return res;
     }
     
-    bool try_pop(T& value)
+    bool try_pop(std::shared_ptr<T>& valuePtr)
     {
         std::lock_guard<std::mutex> lk(mut);
         if(dataQueue.empty())
+        {
             return false;
-        value=dataQueue.front();
+        }
+        valuePtr = std::make_shared<T>(std::move(dataQueue.front()));
         dataQueue.pop();
         return true;
     }
@@ -76,5 +77,14 @@ public:
     {
         std::lock_guard<std::mutex> lk(mut);
         return dataQueue.empty();
+    }
+
+    void close()
+    {
+        {
+            std::lock_guard<std::mutex> lk(mut);
+            mClosed = true;
+        }
+        dataCond.notify_all();
     }
 };

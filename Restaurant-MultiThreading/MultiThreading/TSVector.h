@@ -19,12 +19,31 @@ public:
         dataVector = other.dataVector;
     }
     
+    TSVector(std::initializer_list<T> init)
+    {
+        std::lock_guard<std::mutex> lk(mut);
+        dataVector = init;
+    }
+
+    std::vector<T> getCopy()
+    {
+        std::lock_guard<std::mutex> lk(mut);
+        return dataVector;
+    }
+    
     TSVector& operator=(const TSVector&) = delete;
     
     void push_back(T newValue)
     {
         std::lock_guard<std::mutex> lk(mut);
         dataVector.push_back(newValue);
+        dataCond.notify_one();
+    }
+
+    void push_back(std::initializer_list<T> ilist)
+    {
+        std::lock_guard<std::mutex> lk(mut);
+        dataVector.insert(dataVector.end(), ilist);
         dataCond.notify_one();
     }
     

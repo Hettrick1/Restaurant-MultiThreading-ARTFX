@@ -9,7 +9,8 @@ const Color Color::YELLOW("\033[33m");
 const Color Color::BLUE("\033[34m");
 const Color Color::MAGENTA("\033[35m");
 const Color Color::CYAN("\033[36m");
-const Color Color::WHITE("\033[37m");
+const Color Color::GRAY("\033[37m");
+const Color Color::WHITE("\033[0m");
 
 const Color Color::BOLDBLACK("\033[1;30m");
 const Color Color::BOLDRED("\033[1;31m");

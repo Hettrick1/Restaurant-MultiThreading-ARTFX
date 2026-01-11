@@ -46,6 +46,8 @@ class TSLogger
 private:
     TSQueue<LogMessage> mLogQueue;
 public:
-    void PrintMessages();
+    bool PrintMessagesOrShouldStop();
     void PushLogMessage(LogMessage message);
+    bool HasMessagesToPrint();
+    void StopLogging();
 };

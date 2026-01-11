@@ -166,6 +166,7 @@
     <ClInclude Include="MultiThreading\TSLogger.h" />
     <ClInclude Include="MultiThreading\TSQueue.h" />
     <ClInclude Include="MultiThreading\TSVector.h" />
+    <ClInclude Include="Order.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

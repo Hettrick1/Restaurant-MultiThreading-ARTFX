@@ -7,11 +7,17 @@
 #include <ctime>
 #include <string>
 
-void TSLogger::PrintMessages()
+bool TSLogger::PrintMessagesOrShouldStop()
 {
     LogMessage message;
     mLogQueue.waitAndPop(message);
 
+    if (message.mText == "STOP")
+    {
+        std::cout << message.mColor.mColorCode << message.mText << Color::RESET.mColorCode << std::endl;
+        return true;
+    }
+    
     if (auto LogEmitter = message.mLogEmitter.lock())
     {
         std::ostringstream ossTime;
@@ -22,15 +28,26 @@ void TSLogger::PrintMessages()
             localtime_s(&tm_safe, &t);
             ossTime << std::put_time(&tm_safe, "%H:%M:%S") << " - ";
         }        
-        std::cout << "[" << ossTime.str() << LogEmitter->mName << "]" << LogEmitter->mColor.mColorCode << message.mText << Color::RESET.mColorCode << "\n";
+        std::cout << "[" << ossTime.str() << LogEmitter->mName << "]" << LogEmitter->mColor.mColorCode << message.mText << Color::RESET.mColorCode << std::endl;
     }
     else
     {
-        std::cout << message.mColor.mColorCode << message.mText << Color::RESET.mColorCode << "\n";
+        std::cout << message.mColor.mColorCode << message.mText << Color::RESET.mColorCode << std::endl;
     }
+    return false;
 }
 
 void TSLogger::PushLogMessage(LogMessage message)
 {
     mLogQueue.push(std::move(message));
+}
+
+bool TSLogger::HasMessagesToPrint()
+{
+    return !mLogQueue.empty();
+}
+
+void TSLogger::StopLogging()
+{
+    PushLogMessage(LogMessage("STOP", Color::WHITE));
 }

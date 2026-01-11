@@ -4,6 +4,12 @@
 
 struct Meal
 {
-    std::string name;
-    TSVector<Ingredient> ingredients;
+    std::string mName;
+    TSVector<Ingredient> mIngredients;
+
+    Meal(std::string name, const TSVector<Ingredient>& ingredients)
+        : mName{std::move(name)}, mIngredients{ingredients}
+    {
+        
+    }
 };

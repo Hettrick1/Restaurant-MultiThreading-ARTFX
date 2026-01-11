@@ -19,6 +19,7 @@ struct Color
     static const Color BLUE;
     static const Color MAGENTA;
     static const Color CYAN;
+    static const Color GRAY;
     static const Color WHITE;
     static const Color BOLDBLACK;
     static const Color BOLDRED;

@@ -65,6 +65,12 @@ public:
         dataQueue.pop();
         return res;
     }
+
+    size_t size()
+    {
+        std::lock_guard<std::mutex> lk(mut);
+        return dataQueue.size();
+    }
     
     bool empty() const
     {

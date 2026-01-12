@@ -5,7 +5,7 @@
 #include "../TSVector.h"
 
 Chief::Chief(std::string name, bool& applicationIsRunning, std::shared_ptr<LogEmitter> logEmitter, std::shared_ptr<ILogger> logger,
-    TSQueue<std::pair<Order*, Meal>>& mealToPrepare, TSQueue<std::pair<Order*, Meal>>& readyMealQueue)
+    TSQueue<std::pair<std::shared_ptr<Order>, Meal>>& mealToPrepare, TSQueue<std::pair<std::shared_ptr<Order>, Meal>>& readyMealQueue)
     : Actor(std::move(name), applicationIsRunning, std::move(logEmitter), std::move(logger)), mMealToPrepare(mealToPrepare), mReadyMealQueue(readyMealQueue)
 {
 }

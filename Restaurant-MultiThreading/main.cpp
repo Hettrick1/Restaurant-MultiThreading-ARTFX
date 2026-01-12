@@ -56,18 +56,17 @@ int main()
     
     Logger->PushLogMessage(LogMessage("Hello everybody, welcome in my new Restaurant multithreaded !", Color::WHITE));
 
-    TSVector<Order*> orderQueue;
-    TSQueue<std::pair<Order*, Ingredient>> ingredientsToPrepare;
-    TSQueue<std::pair<Order*, Ingredient>> ingredientsReady;
-    TSQueue<std::pair<Order*, Meal>> mealToPrepare;
-    TSQueue<std::pair<Order*, Meal>> readyMealQueue;
+    TSVector<std::shared_ptr<Order>> orderQueue;
+    TSQueue<std::pair<std::shared_ptr<Order>, Ingredient>> ingredientsToPrepare;
+    TSQueue<std::pair<std::shared_ptr<Order>, Meal>> mealToPrepare;
+    TSQueue<std::pair<std::shared_ptr<Order>, Meal>> readyMealQueue;
     
-    customer1 = std::make_shared<Customer>("Custommer1", bIsRunning, CustomerEmitter, Logger, orderQueue);
-    customer2= std::make_shared<Customer>("Custommer2", bIsRunning, CustomerEmitter2, Logger, orderQueue);
-    customer3= std::make_shared<Customer>("Custommer3", bIsRunning, CustomerEmitter3, Logger, orderQueue);
+    customer1 = std::make_shared<Customer>("Customer1", bIsRunning, CustomerEmitter, Logger, orderQueue);
+    customer2= std::make_shared<Customer>("Customer2", bIsRunning, CustomerEmitter2, Logger, orderQueue);
+    customer3= std::make_shared<Customer>("Customer3", bIsRunning, CustomerEmitter3, Logger, orderQueue);
     waiter = std::make_unique<Waiter>("Waiter", bIsRunning, WaiterEmitter, Logger, orderQueue, ingredientsToPrepare, readyMealQueue);
-    cooker = std::make_unique<Cooker>("Cooker", bIsRunning, CookerEmitter, Logger, ingredientsToPrepare, ingredientsReady, mealToPrepare);
-    cooker2 = std::make_unique<Cooker>("Cooker2", bIsRunning, CookerEmitter2, Logger, ingredientsToPrepare, ingredientsReady, mealToPrepare);
+    cooker = std::make_unique<Cooker>("Cooker", bIsRunning, CookerEmitter, Logger, ingredientsToPrepare, mealToPrepare);
+    cooker2 = std::make_unique<Cooker>("Cooker2", bIsRunning, CookerEmitter2, Logger, ingredientsToPrepare, mealToPrepare);
     chief = std::make_unique<Chief>("Chief", bIsRunning, ChiefEmitter, Logger, mealToPrepare, readyMealQueue);
 
     customer1->StartThread();
@@ -84,7 +83,6 @@ int main()
     }
     
     ingredientsToPrepare.close();
-    ingredientsReady.close();
     mealToPrepare.close();
     readyMealQueue.close();
     

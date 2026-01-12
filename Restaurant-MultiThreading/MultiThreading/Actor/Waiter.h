@@ -4,6 +4,7 @@
 
 #include "Actor.h"
 
+// class that handles the waiter role (taking orders from the customers and bringing the meals to them when they are ready)
 class Waiter : public Actor
 {
 protected:

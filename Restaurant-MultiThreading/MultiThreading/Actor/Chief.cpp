@@ -13,13 +13,19 @@ Chief::Chief(std::string name, bool& applicationIsRunning, std::shared_ptr<LogEm
 void Chief::ThreadFunction()
 {
     Actor::ThreadFunction();
-    
     while (mApplicationIsRunning)
     {
+        // waits until there is a meal to prepare
         auto meal = mMealToPrepare.waitAndPop();
-        if (!meal) break;
+        if (!meal) // if meal == nullptr, that means we should reconsider the while condition (maybe that means the application is closing)
+        {
+            break;
+        }
+
         mLogger->PushLogMessage(LogMessage("I am preparing the meal...", mLogEmitter));
         std::this_thread::sleep_for(std::chrono::seconds(2));
+        
+        // the meal is now ready to be sent to the client
         mReadyMealQueue.push(*meal);
         mLogger->PushLogMessage(LogMessage("The meal is ready!", mLogEmitter));
     }

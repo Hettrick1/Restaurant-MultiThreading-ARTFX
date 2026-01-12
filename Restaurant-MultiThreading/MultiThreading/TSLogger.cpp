@@ -19,12 +19,14 @@ bool TSLogger::PrintMessagesOrShouldStop()
 
     if (!message)
     {
+        // we should stop printing logs
         std::cout << Color::WHITE.mColorCode << "STOP logging" << Color::RESET.mColorCode << std::endl;
         return true;
     }
     
     if (auto LogEmitter = message->mLogEmitter.lock())
     {
+        // if there is an emitter we use the emitter parameters
         std::ostringstream ossTime;
         if (LogEmitter->mWriteTime)
         {
@@ -37,6 +39,7 @@ bool TSLogger::PrintMessagesOrShouldStop()
     }
     else
     {
+        // else just use the color if there is one
         std::cout << message->mColor.mColorCode << message->mText << Color::RESET.mColorCode << std::endl;
     }
     return false;

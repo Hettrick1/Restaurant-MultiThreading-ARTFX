@@ -12,6 +12,7 @@ void Actor::StartThread()
 
 void Actor::ThreadFunction()
 {
+    // just print a basic greeting to know that the thread is running
     std::string greetings = std::string("I am the ") + mName + "!";
     mLogger->PushLogMessage(LogMessage(greetings, mLogEmitter));
     std::this_thread::sleep_for(std::chrono::seconds(1));

@@ -5,6 +5,8 @@
 #include <memory>
 #include <string>
 
+// struct that stores parameters for logs such as the color of the logs, if we print the time and the name of the emitter
+// we can have multiples emitter in the application
 struct LogEmitter
 {
     std::string mName;
@@ -18,11 +20,12 @@ struct LogEmitter
     }
 };
 
+// wrap a message to print in a struct
 struct LogMessage
 {
     std::string mText = "Empty";
     Color mColor = Color::WHITE;
-    std::weak_ptr<LogEmitter> mLogEmitter;
+    std::weak_ptr<LogEmitter> mLogEmitter; // who ask to write
 
     LogMessage() = default;
     

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 
+// handles colors for the console texts
 struct Color
 {
     std::string mColorCode;
@@ -10,7 +11,7 @@ struct Color
     {
         
     }
-
+    
     static const Color RESET;
     static const Color WHITE;
     static const Color BLACK;

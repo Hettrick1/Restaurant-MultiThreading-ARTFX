@@ -18,25 +18,32 @@ void Waiter::ThreadFunction()
     Actor::ThreadFunction();
     while (mApplicationIsRunning)
     {
+        // as the waiter has 2 tasks he needs to continuously check if he has something to do
+        // if we don't do that we may have a deadlock situation
         std::shared_ptr<Order> order = nullptr;
-        if (mOrderQueue.pop_back(order))
+        if (mOrderQueue.pop_back(order)) // try to get an order from the queue
         {
+            // there is an order
             mLogger->PushLogMessage(LogMessage("I have receive an order from " + order->mCustomer.lock()->mName + "!" , mLogEmitter));
             for (auto i : order->mMeal.mIngredients.getCopy())
             {
+                // push the ingredients to prepare in the queue
                 mIngredientsToPrepare.push(std::pair<std::shared_ptr<Order>, Ingredient>(order, i));
             }
             continue;
         }
-        std::shared_ptr<std::pair<std::shared_ptr<Order>, Meal>> orderMealPair = nullptr;
-        if (mReadyMealQueue.try_pop(orderMealPair))
+        std::shared_ptr<std::pair<std::shared_ptr<Order>, Meal>> ReadyMealPair = nullptr;
+        if (mReadyMealQueue.try_pop(ReadyMealPair)) // try to get a meal from the ready meal queue
         {
-            mLogger->PushLogMessage(LogMessage("I am serving the Meal to" + orderMealPair->first->mCustomer.lock()->mName + "...", mLogEmitter));
+            // a meal is ready
+            mLogger->PushLogMessage(LogMessage("I am serving the Meal to" + ReadyMealPair->first->mCustomer.lock()->mName + "...", mLogEmitter));
             std::this_thread::sleep_for(std::chrono::seconds(1));
-            orderMealPair->first->mCustomer.lock()->RecieveMeal(orderMealPair->first->mMeal);
+            // send the meal for the customer that ordered it
+            ReadyMealPair->first->mCustomer.lock()->RecieveMeal(ReadyMealPair->second);
             mLogger->PushLogMessage(LogMessage("I have served the Meal!", mLogEmitter));
             continue;
         }
+        // sleep a bit to save some CPU
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }

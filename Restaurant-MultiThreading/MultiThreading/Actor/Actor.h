@@ -9,6 +9,8 @@
 #include "../TSQueue.h"
 #include <utility>
 
+// parent class of each actor
+// handles a thread, so each actor is a thread
 class Actor
 {
 protected:

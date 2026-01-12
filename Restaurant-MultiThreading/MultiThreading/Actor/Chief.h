@@ -4,6 +4,7 @@
 
 #include "Actor.h"
 
+// class that handles the chief role (creating meal based on ingredients prepared by the cooks)
 class Chief : public Actor
 {
 protected:

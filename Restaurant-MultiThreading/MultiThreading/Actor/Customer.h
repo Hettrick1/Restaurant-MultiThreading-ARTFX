@@ -1,6 +1,7 @@
 #pragma once
 #include "Actor.h"
 
+// class that handles the customer role (choosing a random meal in the list and when it's ready eat it)
 class Customer :  public std::enable_shared_from_this<Customer>, public Actor
 {
 protected:

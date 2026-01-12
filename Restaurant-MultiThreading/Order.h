@@ -4,9 +4,10 @@ class Customer;
 #include "Meal.h"
 #include <memory>
 
+// handles orders taken by the customers
 struct Order
 {
-    std::weak_ptr<Customer> mCustomer;
+    std::weak_ptr<Customer> mCustomer; // maybe we could use a future here
     TSVector<Ingredient> mIngredientsReady;
     Meal mMeal;
 

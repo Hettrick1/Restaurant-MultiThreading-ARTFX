@@ -4,6 +4,7 @@
 
 #include "Actor.h"
 
+// class that handles the cooker role (creating ingredients based on the orders brought by the waiters)
 class Cooker : public Actor
 {
 protected:

@@ -4,6 +4,8 @@
 #include <mutex>
 #include <condition_variable>
 
+// thread safe queue
+
 template<typename T>
 class TSQueue
 {

@@ -3,16 +3,17 @@
 class Customer;
 #include "Meal.h"
 #include <memory>
+#include <future>
 
 // handles orders taken by the customers
 struct Order
 {
-    std::weak_ptr<Customer> mCustomer; // maybe we could use a future here
-    TSVector<Ingredient> mIngredientsReady;
     Meal mMeal;
+    std::promise<Meal> mPromiseMeal;
+    TSVector<Ingredient> mIngredientsReady;
 
-    Order(Meal meal, const std::shared_ptr<Customer>& customer)
-        :  mCustomer {customer}, mMeal{std::move(meal)}
+    Order(Meal meal, std::promise<Meal>& promiseMeal)
+        :  mMeal{std::move(meal)}, mPromiseMeal{std::move(promiseMeal)}
     {
         
     }

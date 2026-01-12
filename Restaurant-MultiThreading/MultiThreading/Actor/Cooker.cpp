@@ -26,9 +26,8 @@ void Cooker::ThreadFunction()
         {
             break;
         }
-        mLogger->PushLogMessage(LogMessage("I am preparing an ingredient from " + ingredientInMeal->first->mCustomer.lock()->mName, mLogEmitter));
+        mLogger->PushLogMessage(LogMessage("I am preparing " + ingredients::to_string(ingredientInMeal->second) + " for " + ingredientInMeal->first->mMeal.mName, mLogEmitter));
         std::this_thread::sleep_for(std::chrono::seconds(1));
-        mLogger->PushLogMessage(LogMessage("I prepared an ingredient from " + ingredientInMeal->first->mCustomer.lock()->mName, mLogEmitter));
         {
             // lock the order we are working on
             std::lock_guard<std::mutex> guard(mIngredientsReadyMutex);
@@ -42,7 +41,7 @@ void Cooker::ThreadFunction()
                 // (maybe we should push the ingredient list in a queue and then make the chief create the meal ?)
                 Meal meal = Meal::GetMeal(ingredientInMeal->first->mIngredientsReady);
                 mMealToPrepare.push(std::pair<std::shared_ptr<Order>, Meal>(ingredientInMeal->first, meal));
-                mLogger->PushLogMessage(LogMessage("I added a meal to be prepared for " + ingredientInMeal->first->mCustomer.lock()->mName, mLogEmitter));
+                mLogger->PushLogMessage(LogMessage("I added a meal to be plate ub by the chief : " + ingredientInMeal->first->mMeal.mName, mLogEmitter));
             }
         }
     }

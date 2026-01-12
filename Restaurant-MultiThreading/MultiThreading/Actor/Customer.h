@@ -2,12 +2,14 @@
 #include "Actor.h"
 
 // class that handles the customer role (choosing a random meal in the list and when it's ready eat it)
-class Customer :  public std::enable_shared_from_this<Customer>, public Actor
+class Customer : public Actor
 {
 protected:
     static std::atomic_int customer;
 
     TSVector<std::shared_ptr<Order>>& mOrderQueue;
+    std::promise<Meal> mPromisedMeal;
+    std::future<Meal> mFutureMeal;
     TSQueue<Meal> mServedMealQueue;
 
     int intRand(const int & min, const int & max);

@@ -27,6 +27,6 @@ void Chief::ThreadFunction()
         
         // the meal is now ready to be sent to the client
         mReadyMealQueue.push(*meal);
-        mLogger->PushLogMessage(LogMessage("The meal is ready!", mLogEmitter));
+        mLogger->PushLogMessage(LogMessage("The " + meal->first->mMeal.mName + " is ready!", mLogEmitter));
     }
 }

@@ -24,7 +24,7 @@ void Waiter::ThreadFunction()
         if (mOrderQueue.pop_back(order)) // try to get an order from the queue
         {
             // there is an order
-            mLogger->PushLogMessage(LogMessage("I have receive an order from " + order->mCustomer.lock()->mName + "!" , mLogEmitter));
+            mLogger->PushLogMessage(LogMessage("I have receive an order, we need to prepare a " + order->mMeal.mName, mLogEmitter));
             for (auto i : order->mMeal.mIngredients.getCopy())
             {
                 // push the ingredients to prepare in the queue
@@ -36,10 +36,12 @@ void Waiter::ThreadFunction()
         if (mReadyMealQueue.try_pop(ReadyMealPair)) // try to get a meal from the ready meal queue
         {
             // a meal is ready
-            mLogger->PushLogMessage(LogMessage("I am serving the Meal to" + ReadyMealPair->first->mCustomer.lock()->mName + "...", mLogEmitter));
+            mLogger->PushLogMessage(LogMessage("I am serving the " + ReadyMealPair->first->mMeal.mName + "...", mLogEmitter));
             std::this_thread::sleep_for(std::chrono::seconds(1));
-            // send the meal for the customer that ordered it
-            ReadyMealPair->first->mCustomer.lock()->RecieveMeal(ReadyMealPair->second);
+            
+            // send the meal for the customer that ordered it using the promise
+            ReadyMealPair->first->mPromiseMeal.set_value(ReadyMealPair->second);
+            
             mLogger->PushLogMessage(LogMessage("I have served the Meal!", mLogEmitter));
             continue;
         }

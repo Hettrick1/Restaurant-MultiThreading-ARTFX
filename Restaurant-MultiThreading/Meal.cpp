@@ -3,8 +3,8 @@
 std::unordered_map<uint16_t, Meal> Meal::AllMeals = {
     // creates meal templates
     {Ingredient::STEAK | Ingredient::FRIES | Ingredient::SALT, Meal("Steak Fries", {Ingredient::STEAK, Ingredient::FRIES, Ingredient::SALT})},
-    {Ingredient::ZUCHINI | Ingredient::TOFU | Ingredient::RICE, Meal("Veggie Meal", {Ingredient::ZUCHINI, Ingredient::TOFU, Ingredient::RICE})},
-    {Ingredient::STEAK | Ingredient::PEPER | Ingredient::SMASHED_POTATOES, Meal("Peper Steak", {Ingredient::STEAK, Ingredient::PEPER, Ingredient::SMASHED_POTATOES})},
+    {Ingredient::ZUCCHINI | Ingredient::TOFU | Ingredient::RICE, Meal("Veggie Meal", {Ingredient::ZUCCHINI, Ingredient::TOFU, Ingredient::RICE})},
+    {Ingredient::STEAK | Ingredient::PEPPER | Ingredient::SMASHED_POTATOES, Meal("Peper Steak", {Ingredient::STEAK, Ingredient::PEPPER, Ingredient::SMASHED_POTATOES})},
     {Ingredient::NUGGETS | Ingredient::CARROTS | Ingredient::SMASHED_POTATOES, Meal("Children Meal", {Ingredient::NUGGETS, Ingredient::CARROTS, Ingredient::SMASHED_POTATOES})}
 };
 

@@ -7,10 +7,10 @@
 class Chief : public Actor
 {
 protected:
-    TSQueue<Meal>& mMealToPrepare;
-    TSQueue<Meal>& mReadyMealQueue;
+    TSQueue<std::pair<Order*, Meal>>& mMealToPrepare;
+    TSQueue<std::pair<Order*, Meal>>& mReadyMealQueue;
 public:
-    Chief(std::string name, bool& applicationIsRunning, std::shared_ptr<LogEmitter>  logEmitter, std::shared_ptr<ILogger> logger, TSQueue<Meal>& mealToPrepare, TSQueue<Meal>& readyMealQueue);
+    Chief(std::string name, bool& applicationIsRunning, std::shared_ptr<LogEmitter>  logEmitter, std::shared_ptr<ILogger> logger, TSQueue<std::pair<Order*, Meal>>& mealToPrepare, TSQueue<std::pair<Order*, Meal>>& readyMealQueue);
     virtual ~Chief() override = default;
     virtual void ThreadFunction() override;
     

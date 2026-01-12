@@ -30,7 +30,27 @@ public:
         return dataVector;
     }
     
-    TSVector& operator=(const TSVector&) = delete;
+    TSVector& operator=(const TSVector& other)
+    {
+        if (this != &other)
+        {
+            std::lock_guard<std::mutex> lk1(mut);
+            std::lock_guard<std::mutex> lk2(other.mut);
+            dataVector = other.dataVector;
+        }
+        return *this;
+    }
+
+    std::shared_ptr<T> operator[] (size_t n)
+    {
+        std::lock_guard<std::mutex> lk1(mut);
+        if (dataVector.empty())
+        {
+            return nullptr;
+        }
+        return std::make_shared<T>(dataVector[n]);
+    }
+    
     
     void push_back(T newValue)
     {
@@ -56,9 +76,27 @@ public:
         return res;
     }
     
+    bool pop_back(T& ref)
+    {
+        std::unique_lock<std::mutex> lk(mut);
+        if (dataVector.empty())
+        {
+            return false;
+        }
+        ref = dataVector.back();
+        dataVector.pop_back();
+        return true;
+    }
+    
     bool empty() const
     {
         std::lock_guard<std::mutex> lk(mut);
         return dataVector.empty();
+    }
+
+    size_t size() const
+    {
+        std::lock_guard<std::mutex> lk(mut);
+        return dataVector.size();
     }
 };

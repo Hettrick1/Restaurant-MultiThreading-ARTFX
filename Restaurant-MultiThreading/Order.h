@@ -1,13 +1,17 @@
 #pragma once
-#include "Ingredient.h"
-#include "MultiThreading/TSVector.h"
+
+class Customer;
+#include "Meal.h"
+#include <memory>
 
 struct Order
 {
-    TSVector<Ingredient> mIngredients;
+    std::weak_ptr<Customer> mCustomer;
+    TSVector<Ingredient> mIngredientsReady;
+    Meal mMeal;
 
-    Order(const TSVector<Ingredient>& ingredients)
-        : mIngredients{ingredients}
+    Order(Meal meal, const std::shared_ptr<Customer>& customer)
+        :  mCustomer {customer}, mMeal{std::move(meal)}
     {
         
     }

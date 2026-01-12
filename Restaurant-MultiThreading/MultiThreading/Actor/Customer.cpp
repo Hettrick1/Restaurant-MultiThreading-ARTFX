@@ -2,8 +2,8 @@
 
 std::atomic_int Customer::customer = 0;
 
-Customer::Customer(std::string name, bool& applicationIsRunning, std::shared_ptr<LogEmitter> logEmitter, std::shared_ptr<ILogger> logger, TSQueue<Order>& orderQueue, TSQueue<Meal>& servedMealQueue)
-    : Actor(std::move(name), applicationIsRunning, std::move(logEmitter), std::move(logger)), mOrderQueue(orderQueue), mServedMealQueue(servedMealQueue)
+Customer::Customer(std::string name, bool& applicationIsRunning, std::shared_ptr<LogEmitter> logEmitter, std::shared_ptr<ILogger> logger, TSVector<Order*>& orderQueue)
+    : Actor(std::move(name), applicationIsRunning, std::move(logEmitter), std::move(logger)), mOrderQueue(orderQueue)
 {
     ++customer;
 }
@@ -11,18 +11,19 @@ Customer::Customer(std::string name, bool& applicationIsRunning, std::shared_ptr
 void Customer::ThreadFunction()
 {
     Actor::ThreadFunction();
+
+    Meal mealWanted = *Meal::AllMeals[0];
+    TSVector<Ingredient> ingredientsInMeal = mealWanted.mIngredients ;
+    Order order = Order(mealWanted, shared_from_this());
     
-    TSVector<Ingredient> ingredientsInMeal {Ingredient("Patatas"), Ingredient("Salt"), Ingredient("Peper")} ;
-    Order order = Order(ingredientsInMeal);
-    
-    mLogger->PushLogMessage(LogMessage("I am ordering!", mLogEmitter));
-    mOrderQueue.push(order);
+    mLogger->PushLogMessage(LogMessage("I am ordering " + mealWanted.mName + "!", mLogEmitter));
+    mOrderQueue.push_back(&order);
     
     mLogger->PushLogMessage(LogMessage("I am waiting my meal...", mLogEmitter));
     std::shared_ptr<Meal> meal = mServedMealQueue.waitAndPop();
     if (!meal) return;
 
-    mLogger->PushLogMessage(LogMessage("I am eating...", mLogEmitter));
+    mLogger->PushLogMessage(LogMessage("I am eating " + meal->mName + "...", mLogEmitter));
     std::this_thread::sleep_for(std::chrono::seconds(2));
     mLogger->PushLogMessage(LogMessage("I am leaving!", mLogEmitter));
     --customer;
@@ -30,4 +31,9 @@ void Customer::ThreadFunction()
     {
         mApplicationIsRunning = false;
     }
+}
+
+void Customer::RecieveMeal(const Meal& meal)
+{
+    mServedMealQueue.push(meal);
 }

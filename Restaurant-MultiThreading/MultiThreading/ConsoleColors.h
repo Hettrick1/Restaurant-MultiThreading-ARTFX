@@ -12,7 +12,9 @@ struct Color
     }
 
     static const Color RESET;
+    static const Color WHITE;
     static const Color BLACK;
+    
     static const Color RED;
     static const Color GREEN;
     static const Color YELLOW;
@@ -20,7 +22,23 @@ struct Color
     static const Color MAGENTA;
     static const Color CYAN;
     static const Color GRAY;
-    static const Color WHITE;
+    
+    static const Color LIGHTRED;
+    static const Color LIGHTGREEN;
+    static const Color LIGHTYELLOW;
+    static const Color LIGHTBLUE;
+    static const Color LIGHTMAGENTA;
+    static const Color LIGHTCYAN;
+    static const Color LIGHTGRAY;
+    
+    static const Color DARKRED;    
+    static const Color DARKGREEN; 
+    static const Color DARKYELLOW;
+    static const Color DARKBLUE; 
+    static const Color DARKMAGENTA;
+    static const Color DARKCYAN;
+    static const Color DARKGRAY; 
+    
     static const Color BOLDBLACK;
     static const Color BOLDRED;
     static const Color BOLDGREEN;
@@ -29,4 +47,5 @@ struct Color
     static const Color BOLDMAGENTA;
     static const Color BOLDCYAN;
     static const Color BOLDWHITE;
+    static const Color BOLDGRAY;
 };

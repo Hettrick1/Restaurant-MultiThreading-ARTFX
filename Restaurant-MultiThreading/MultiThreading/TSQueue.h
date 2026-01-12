@@ -61,7 +61,9 @@ public:
     {
         std::lock_guard<std::mutex> lk(mut);
         if(dataQueue.empty())
-            return std::shared_ptr<T>();
+        {
+            return nullptr;
+        }
         std::shared_ptr<T> res( std::make_shared<T>(dataQueue.front()) );
         dataQueue.pop();
         return res;

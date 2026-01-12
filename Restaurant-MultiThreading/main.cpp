@@ -10,135 +10,74 @@
 #include "Order.h"
 #include "MultiThreading/TSQueue.h"
 
+#include "MultiThreading/Actor/Customer.h"
+#include "MultiThreading/Actor/Waiter.h"
+#include "MultiThreading/Actor/Cooker.h"
+#include "MultiThreading/Actor/Chief.h"
+
 #include <ctime>
 #include <filesystem>
-
-static TSQueue<Order> orderQueue;
-static TSQueue<Ingredient> ingredientsToPrepare;
-static TSQueue<Ingredient> ingredientsReady;
-static TSQueue<Meal> mealToPrepare;
-static TSQueue<Meal> readyMealQueue;
-static TSQueue<Meal> servedMealQueue;     
 
 static bool bIsRunning = true;
 
 std::shared_ptr<LogEmitter> CustomerEmitter;
+std::shared_ptr<LogEmitter> CustomerEmitter2;
+std::shared_ptr<LogEmitter> CustomerEmitter3;
 std::shared_ptr<LogEmitter> WaiterEmitter;
 std::shared_ptr<LogEmitter> CookerEmitter;
+std::shared_ptr<LogEmitter> CookerEmitter2;
 std::shared_ptr<LogEmitter> ChiefEmitter;
 
-std::unique_ptr<TSLogger> Logger;
+std::unique_ptr<Customer> customer1;
+std::unique_ptr<Customer> customer2;
+std::unique_ptr<Customer> customer3;
+std::unique_ptr<Waiter> waiter;
+std::unique_ptr<Cooker> cooker;
+std::unique_ptr<Cooker> cooker2;
+std::unique_ptr<Chief> chief;
 
-void Customer()
-{
-    Logger->PushLogMessage( LogMessage("I am the customer!", CustomerEmitter));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    
-    TSVector<Ingredient> ingredientsInMeal {Ingredient("Patatas"), Ingredient("Salt"), Ingredient("Peper")} ;
-    Order order = Order(ingredientsInMeal);
-    
-    Logger->PushLogMessage(LogMessage("I am ordering!", CustomerEmitter));
-    orderQueue.push(order);
-    
-    Logger->PushLogMessage(LogMessage("I am waiting my meal...", CustomerEmitter));
-    std::shared_ptr<Meal> meal = servedMealQueue.waitAndPop();
-    if (!meal) return;
 
-    Logger->PushLogMessage(LogMessage("I am eating!", CustomerEmitter));
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    Logger->PushLogMessage(LogMessage("I am leaving!", CustomerEmitter));
-    bIsRunning = false;
-}
-void Waiter()
-{
-    Logger->PushLogMessage(LogMessage("I am the waiter!", WaiterEmitter));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    while (bIsRunning)
-    {
-        std::shared_ptr<Order> order = nullptr;
-        if (orderQueue.try_pop(order))
-        {
-            Logger->PushLogMessage(LogMessage("I have receive an order!", WaiterEmitter));
-            for (Ingredient i : order->mIngredients.getCopy())
-            {
-                ingredientsToPrepare.push(i);
-            }
-            continue;
-        }
-        std::shared_ptr<Meal> meal = nullptr;
-        if (readyMealQueue.try_pop(meal))
-        {
-            Logger->PushLogMessage(LogMessage("I am serving the Meal...", WaiterEmitter));
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            servedMealQueue.push(*meal);
-            Logger->PushLogMessage(LogMessage("I have served the Meal!", WaiterEmitter));
-            continue;
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
-}
-void Cooker()
-{
-    Logger->PushLogMessage(LogMessage("I am the cooker!", CookerEmitter));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    while (bIsRunning)
-    {
-        std::shared_ptr<Ingredient> ingredientInMeal = ingredientsToPrepare.waitAndPop();
-        if (!ingredientInMeal) break;
-        Logger->PushLogMessage(LogMessage("I am preparing an ingredient...", CookerEmitter));
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        ingredientsReady.push(*ingredientInMeal);
-        if (ingredientsReady.size() == 3)
-        {
-            std::shared_ptr<Ingredient> ingredient1 = ingredientsReady.waitAndPop();
-            std::shared_ptr<Ingredient> ingredient2 = ingredientsReady.waitAndPop();
-            std::shared_ptr<Ingredient> ingredient3 = ingredientsReady.waitAndPop();
-            if (!ingredient1 || !ingredient2 || !ingredient3) break;
-            TSVector<Ingredient> ingredientsInMeal = {*ingredient1, *ingredient2, *ingredient3};
-            Meal meal = Meal("Meal", ingredientsInMeal);
-            mealToPrepare.push(meal);
-            Logger->PushLogMessage(LogMessage("I added an meal to be prepared!", CookerEmitter));
-        }
-    }
-}
-void Chief()
-{
-    Logger->PushLogMessage(LogMessage("I am the chief!", ChiefEmitter));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    while (bIsRunning)
-    {
-        std::shared_ptr<Meal> meal = mealToPrepare.waitAndPop();
-        if (!meal) break;
-        Logger->PushLogMessage(LogMessage("I am preparing the meal...", ChiefEmitter));
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-        readyMealQueue.push(*meal);
-        Logger->PushLogMessage(LogMessage("The meal is ready!", ChiefEmitter));
-    }
-}
+std::shared_ptr<TSLogger> Logger;
 
 int main()
 {
-    time_t start = time(0);
+    CustomerEmitter = std::make_shared<LogEmitter>("Customer - 1", true, Color::BLUE);
+    CustomerEmitter2 = std::make_shared<LogEmitter>("Customer - 2", true, Color::LIGHTBLUE);
+    CustomerEmitter3 = std::make_shared<LogEmitter>("Customer - 3", true, Color::BOLDBLUE);
+    WaiterEmitter = std::make_shared<LogEmitter>("Waiter", true, Color::LIGHTRED);
+    CookerEmitter = std::make_shared<LogEmitter>("Cooker", true, Color::LIGHTGREEN);
+    CookerEmitter2 = std::make_shared<LogEmitter>("Cooker - 2", true, Color::BOLDGREEN);
+    ChiefEmitter = std::make_shared<LogEmitter>("Chief", true, Color::LIGHTYELLOW);
 
-    CustomerEmitter = std::make_shared<LogEmitter>("Customer", true, Color::BLUE);
-    WaiterEmitter = std::make_shared<LogEmitter>("Waiter", true, Color::RED);
-    CookerEmitter = std::make_shared<LogEmitter>("Cooker", true, Color::GREEN);
-    ChiefEmitter = std::make_shared<LogEmitter>("Chief", true, Color::YELLOW);
-
-    Logger = std::make_unique<TSLogger>();
+    Logger = std::make_shared<TSLogger>();
 
     Logger->StartLogging();
     
     Logger->PushLogMessage(LogMessage("Hello everybody, welcome in my new Restaurant multithreaded !", Color::WHITE));
+
+    TSQueue<Order> orderQueue;
+    TSQueue<Ingredient> ingredientsToPrepare;
+    TSQueue<Ingredient> ingredientsReady;
+    TSQueue<Meal> mealToPrepare;
+    TSQueue<Meal> readyMealQueue;
+    TSQueue<Meal> servedMealQueue;     
     
-    std::thread CustomerThread = std::thread(Customer);
-    std::thread CustomerThread2 = std::thread(Customer);
-    std::thread WaiterThread = std::thread(Waiter);
-    std::thread CookerThread = std::thread(Cooker);
-    std::thread ChiefThread = std::thread(Chief);
+    customer1 = std::make_unique<Customer>("Custommer1", bIsRunning, CustomerEmitter, Logger, orderQueue, servedMealQueue);
+    customer2= std::make_unique<Customer>("Custommer2", bIsRunning, CustomerEmitter2, Logger, orderQueue, servedMealQueue);
+    customer3= std::make_unique<Customer>("Custommer3", bIsRunning, CustomerEmitter3, Logger, orderQueue, servedMealQueue);
+    waiter = std::make_unique<Waiter>("Waiter", bIsRunning, WaiterEmitter, Logger, orderQueue, ingredientsToPrepare, readyMealQueue, servedMealQueue);
+    cooker = std::make_unique<Cooker>("Cooker", bIsRunning, CookerEmitter, Logger, ingredientsToPrepare, ingredientsReady, mealToPrepare);
+    cooker2 = std::make_unique<Cooker>("Cooker2", bIsRunning, CookerEmitter2, Logger, ingredientsToPrepare, ingredientsReady, mealToPrepare);
+    chief = std::make_unique<Chief>("Chief", bIsRunning, ChiefEmitter, Logger, mealToPrepare, readyMealQueue);
 
-    double seconds_since_start = 0;
-
+    customer1->StartThread();
+    customer2->StartThread();
+    customer3->StartThread();
+    waiter->StartThread();
+    cooker->StartThread();
+    cooker2->StartThread();
+    chief->StartThread();
+    
     while (bIsRunning)
     {
         
@@ -152,12 +91,14 @@ int main()
     servedMealQueue.close();  
     
     Logger->StopLogging();
-    
-    CustomerThread.join();
-    CustomerThread2.join();
-    WaiterThread.join();
-    CookerThread.join();
-    ChiefThread.join();
+
+    customer1->StopThread();
+    customer2->StopThread();
+    customer3->StopThread();
+    waiter->StopThread();
+    cooker->StopThread();
+    cooker2->StopThread();
+    chief->StopThread();
     
     return 0;
 }

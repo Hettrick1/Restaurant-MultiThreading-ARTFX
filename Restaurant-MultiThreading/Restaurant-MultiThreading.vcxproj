@@ -156,12 +156,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MultiThreading\Actor\Actor.cpp" />
+    <ClCompile Include="MultiThreading\Actor\Chief.cpp" />
+    <ClCompile Include="MultiThreading\Actor\Cooker.cpp" />
+    <ClCompile Include="MultiThreading\Actor\Customer.cpp" />
+    <ClCompile Include="MultiThreading\Actor\Waiter.cpp" />
     <ClCompile Include="MultiThreading\ConsoleColors.cpp" />
     <ClCompile Include="MultiThreading\TSLogger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ingredient.h" />
     <ClInclude Include="Meal.h" />
+    <ClInclude Include="MultiThreading\Actor\Actor.h" />
+    <ClInclude Include="MultiThreading\Actor\Chief.h" />
+    <ClInclude Include="MultiThreading\Actor\Cooker.h" />
+    <ClInclude Include="MultiThreading\Actor\Customer.h" />
+    <ClInclude Include="MultiThreading\Actor\Waiter.h" />
     <ClInclude Include="MultiThreading\ConsoleColors.h" />
     <ClInclude Include="MultiThreading\ILogger.h" />
     <ClInclude Include="MultiThreading\TSLogger.h" />

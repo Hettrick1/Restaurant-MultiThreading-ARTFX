@@ -50,9 +50,9 @@ int main()
     TSQueue<std::pair<std::shared_ptr<Order>, Meal>> readyMealQueue;
 
     // actors initialization
-    std::shared_ptr<Customer> customer1 = std::make_shared<Customer>("Customer1", bIsRunning, CustomerEmitter, Logger, orderQueue);
-    std::shared_ptr<Customer> customer2= std::make_shared<Customer>("Customer2", bIsRunning, CustomerEmitter2, Logger, orderQueue);
-    std::shared_ptr<Customer> customer3= std::make_shared<Customer>("Customer3", bIsRunning, CustomerEmitter3, Logger, orderQueue);
+    std::unique_ptr<Customer> customer1 = std::make_unique<Customer>("Customer1", bIsRunning, CustomerEmitter, Logger, orderQueue);
+    std::unique_ptr<Customer> customer2= std::make_unique<Customer>("Customer2", bIsRunning, CustomerEmitter2, Logger, orderQueue);
+    std::unique_ptr<Customer> customer3= std::make_unique<Customer>("Customer3", bIsRunning, CustomerEmitter3, Logger, orderQueue);
     std::unique_ptr<Waiter> waiter = std::make_unique<Waiter>("Waiter", bIsRunning, WaiterEmitter, Logger, orderQueue, ingredientsToPrepare, readyMealQueue);
     std::unique_ptr<Cooker> cooker = std::make_unique<Cooker>("Cooker", bIsRunning, CookerEmitter, Logger, ingredientsToPrepare, mealToPrepare);
     std::unique_ptr<Cooker> cooker2 = std::make_unique<Cooker>("Cooker2", bIsRunning, CookerEmitter2, Logger, ingredientsToPrepare, mealToPrepare);

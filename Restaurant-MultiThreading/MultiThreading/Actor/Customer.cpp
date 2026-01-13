@@ -43,6 +43,7 @@ void Customer::ThreadFunction()
     if (customer == 0)
     {
         // when there are no more customer eating or waiting then we can close the application
+        mLogger->PushLogMessage(LogMessage("All clients have exit the restaurant"));
         mApplicationIsRunning = false;
     }
 }

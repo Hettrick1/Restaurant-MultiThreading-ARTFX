@@ -46,7 +46,7 @@ int main()
 
     TSVector<std::shared_ptr<Order>> orderQueue;
     TSQueue<std::pair<std::shared_ptr<Order>, Ingredient>> ingredientsToPrepare;
-    TSQueue<std::pair<std::shared_ptr<Order>, Meal>> mealToPrepare;
+    TSQueue<std::pair<std::shared_ptr<Order>, TSVector<Ingredient>>> mealToPrepare;
     TSQueue<std::pair<std::shared_ptr<Order>, Meal>> readyMealQueue;
 
     // actors initialization

@@ -12,9 +12,9 @@ protected:
     static std::mutex mIngredientsReadyMutex;
     
     TSQueue<std::pair<std::shared_ptr<Order>, Ingredient>>& mIngredientsToPrepare;
-    TSQueue<std::pair<std::shared_ptr<Order>, Meal>>& mMealToPrepare;
+    TSQueue<std::pair<std::shared_ptr<Order>, TSVector<Ingredient>>>& mMealToPrepare;
 public:
-    Cooker(std::string name, bool& applicationIsRunning, std::shared_ptr<LogEmitter>  logEmitter, std::shared_ptr<ILogger> logger, TSQueue<std::pair<std::shared_ptr<Order>, Ingredient>>& ingredientsToPrepare, TSQueue<std::pair<std::shared_ptr<Order>, Meal>>& mealToPrepare);
+    Cooker(std::string name, bool& applicationIsRunning, std::shared_ptr<LogEmitter>  logEmitter, std::shared_ptr<ILogger> logger, TSQueue<std::pair<std::shared_ptr<Order>, Ingredient>>& ingredientsToPrepare, TSQueue<std::pair<std::shared_ptr<Order>, TSVector<Ingredient>>>& mealToPrepare);
     virtual ~Cooker() override = default;
     virtual void ThreadFunction() override;
 };
